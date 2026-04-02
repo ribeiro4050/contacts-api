@@ -1,0 +1,35 @@
+### 1. Listar todos os contatos
+GET http://localhost:8080/api/contacts
+
+### 2. Criar Contato: Ana
+POST http://localhost:8080/api/contacts
+Content-Type: application/json
+
+{
+  "nome": "Ana Souza",
+  "telefone": "91111-1111",
+  "email": "ana@email.com"
+}
+
+### 3. Criar Contato: Carlos
+POST http://localhost:8080/api/contacts
+Content-Type: application/json
+
+{
+  "nome": "Carlos Lima",
+  "telefone": "92222-2222",
+  "email": "carlos@email.com"
+}
+
+### 4. Buscar por nome (Exercício 1)
+# O Spring vai mapear o "João" para o @RequestParam "name"
+GET http://localhost:8080/api/contacts/search?name=Ana
+
+### 5. Atualização Parcial (PATCH)
+# Teste para ver se os outros campos permanecem intactos
+PATCH http://localhost:8080/api/contacts/1
+Content-Type: application/json
+
+{
+  "telefone": "99999-0000"
+}
