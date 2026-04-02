@@ -1,0 +1,32 @@
+Ex 03:
+
+Qual a principal diferença entre REST e SOAP?
+    REST é um conjunto de principios de arquitetura
+    SOAP é um protocolo
+
+Em quais cenários SOAP ainda é amplamente utilizado?
+    SOAP é amplamente utilizado no contexto clínico
+
+Quais são as vantagens e desvantagens de usar REST ao invés de SOAP?
+    Vantagens:
+        Facilidade na leitura e no uso
+        Compatibilidade com diversos formatos de dados
+        Melhor suporte para cache
+    Desvantagens:
+        Exige mais do lado do cliente
+        Menos seguro se não for bem implementado
+
+O que é WS-Security e como ele se compara à segurança em APIs REST?
+    É um padrão de segurança de proteção de mensagens por meio da assinatura XML
+    e propagação de credenciais por meio de tokens.
+
+Explique o modelo de maturidade de Richardson e em que nível SOAP se encaixa.
+    O modelo de Richardson consistem em 4 niveis de maturidade de uma api sendo elas
+        Nivel 0:
+            Onde a API serve apenas como meio de propagação de mensagem, é aqui que se encaixa o SOAP
+        Nivel 1:
+            a API ja utiliza urls individuais para cada recurso
+        Nivel 2:
+            A API utiliza todos os verbos http
+        Nivel 3:
+            A API utiliza do HATEOAS com links para guiar o cliente

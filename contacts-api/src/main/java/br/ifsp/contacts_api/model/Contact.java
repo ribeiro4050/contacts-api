@@ -15,6 +15,7 @@ public class Contact {
     private String telefone;
     private String email;
 
+    // contrutor vazio porque o JPA exige
     public Contact(){}
 
     public Contact(String nome, String telefone, String email){
