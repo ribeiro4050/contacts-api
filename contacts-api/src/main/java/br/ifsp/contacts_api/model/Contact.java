@@ -1,9 +1,17 @@
 package br.ifsp.contacts_api.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Contact {
@@ -11,44 +19,75 @@ public class Contact {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank(message = "O nome não pode estar vazio")
     private String nome;
-    private String telefone;
+
+    @NotBlank(message = "O email não pode estar vazio")
+    @Email(message = "Formato de email inválido")
     private String email;
 
-    // contrutor vazio porque o JPA exige
-    public Contact(){}
+    @NotBlank(message = "O telefone não pode estar vazio")
+    @Size(min = 8, max = 15, message = "O telefone deve ter entre 8 e 15 caracteres")
+    @Pattern(regexp = "\\d+", message = "O telefone deve conter apenas números")
+    private String telefone;
 
-    public Contact(String nome, String telefone, String email){
-        this.nome = nome;
-        this.telefone = telefone;
-        this.email = email;
+    @OneToMany(mappedBy = "contact", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @NotEmpty(message = "O contato deve ter pelo menos um endereço")
+    private List<Address> addresses = new ArrayList<>();
+
+    public Contact() {
     }
 
-    public Long getId(){
+    public Contact(String nome, String email, String telefone) {
+        this.nome = nome;
+        this.email = email;
+        this.telefone = telefone;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public String getNome(){
+    public String getNome() {
         return nome;
     }
 
-    public String getTelefone(){
-        return telefone;
-    }
-
-    public String getEmail(){
-        return email;
-    }
-
-    public void setNome(String nome){
+    public void setNome(String nome) {
         this.nome = nome;
     }
 
-    public void setTelefone(String telefone){
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
 
-    public void setEmail(String email){
-        this.email = email;
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        if (addresses != null) {
+            addresses.forEach(address -> address.setContact(this));
+
+            if (this.addresses == null) {
+                this.addresses = new ArrayList<>();
+            }
+
+            this.addresses.clear();
+            this.addresses.addAll(addresses);
+        }
     }
 }

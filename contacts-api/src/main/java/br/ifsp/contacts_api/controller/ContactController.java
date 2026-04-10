@@ -1,7 +1,9 @@
 package br.ifsp.contacts_api.controller;
 
+import br.ifsp.contacts_api.exception.ResourceNotFoundException;
 import br.ifsp.contacts_api.model.Contact;
 import br.ifsp.contacts_api.repository.ContactRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +24,7 @@ public class ContactController {
     @GetMapping("/{id}")
     public Contact getContactById(@PathVariable Long id){
         return contactRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Contato não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Contato com ID " + id + " não encontrado"));
     }
 
     // Ex-01
@@ -35,14 +37,14 @@ public class ContactController {
     }
 
     @PostMapping
-    public Contact createContact(@RequestBody Contact contact){
+    public Contact createContact(@RequestBody @Valid Contact contact){
         return contactRepository.save(contact);
     }
 
     @PutMapping("/{id}")
-    public Contact updateContact(@PathVariable Long id, @RequestBody Contact updatedContact){
+    public Contact updateContact(@PathVariable Long id, @RequestBody @Valid Contact updatedContact){
         Contact existingContact = contactRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Contato não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Contato com ID " + id + " não encontrado"));
 
         existingContact.setNome(updatedContact.getNome());
         existingContact.setTelefone(updatedContact.getTelefone());
@@ -52,9 +54,9 @@ public class ContactController {
     }
 
     @PatchMapping("/{id}")
-    public Contact updateField(@PathVariable Long id, @RequestBody Contact updatedField){
+    public Contact updateField(@PathVariable Long id, @RequestBody @Valid Contact updatedField){
         Contact existingContact = contactRepository.findById(id).
-                orElseThrow(()-> new RuntimeException("Contato não encontrado"));
+                orElseThrow(()-> new ResourceNotFoundException("Contato com ID " + id + " não encontrado"));
         if(updatedField.getNome() != null) {
             existingContact.setNome(updatedField.getNome());
         }if(updatedField.getTelefone() != null){
