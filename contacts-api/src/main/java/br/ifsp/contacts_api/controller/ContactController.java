@@ -1,11 +1,13 @@
 package br.ifsp.contacts_api.controller;
 
+import br.ifsp.contacts_api.dto.ContactDTO;
 import br.ifsp.contacts_api.exception.ResourceNotFoundException;
 import br.ifsp.contacts_api.model.Contact;
 import br.ifsp.contacts_api.repository.ContactRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import br.ifsp.contacts_api.mapper.ContactMapper;
 
 import java.util.List;
 
@@ -16,9 +18,13 @@ public class ContactController {
     @Autowired
     private ContactRepository contactRepository;
 
+    @Autowired
+    private ContactMapper contactMapper;
+
     @GetMapping
-    public List<Contact> getAllContacts(){
-        return contactRepository.findAll();
+    public List<ContactDTO> getAllContacts(){
+        List<Contact> contacts = contactRepository.findAll();
+        return contactMapper.toDTOList(contacts);
     }
 
     @GetMapping("/{id}")
