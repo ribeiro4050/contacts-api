@@ -6,6 +6,7 @@ import br.ifsp.contacts_api.model.Contact;
 import br.ifsp.contacts_api.repository.ContactRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import br.ifsp.contacts_api.mapper.ContactMapper;
 
@@ -28,9 +29,11 @@ public class ContactController {
     }
 
     @GetMapping("/{id}")
-    public Contact getContactById(@PathVariable Long id){
-        return contactRepository.findById(id)
+    public ContactDTO getContactById(@PathVariable Long id){
+
+        Contact contact = contactRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Contato com ID " + id + " não encontrado"));
+        return contactMapper.toDTO(contact);
     }
 
     // Ex-01
@@ -38,42 +41,51 @@ public class ContactController {
     // tudo que vier depois do "?" na url, ele entende como parametro automaticamente,
     // no caso o name=valor ele joga no @RequestParam String name
     @GetMapping("/search")
-    public List<Contact> getContactsByName(@RequestParam String name){
-        return contactRepository.findByNomeContaining(name);
+    public List<ContactDTO> getContactsByName(@RequestParam String name){
+        List<Contact> contacts = contactRepository.findByNomeContaining(name);
+        return contactMapper.toDTOList(contacts);
     }
 
     @PostMapping
-    public Contact createContact(@RequestBody @Valid Contact contact){
-        return contactRepository.save(contact);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ContactDTO createContact(@RequestBody @Valid ContactDTO contactDTO){
+        Contact contact = contactMapper.toEntity(contactDTO);
+        if (contact.getAddresses() != null){
+            contact.getAddresses().forEach(address -> address.setContact(contact));
+        }
+        Contact savedContact = contactRepository.save(contact);
+        return contactMapper.toDTO(savedContact);
     }
 
     @PutMapping("/{id}")
-    public Contact updateContact(@PathVariable Long id, @RequestBody @Valid Contact updatedContact){
+    public ContactDTO updateContact(@PathVariable Long id, @RequestBody @Valid ContactDTO updatedContactDTO){
         Contact existingContact = contactRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Contato com ID " + id + " não encontrado"));
 
-        existingContact.setNome(updatedContact.getNome());
-        existingContact.setTelefone(updatedContact.getTelefone());
-        existingContact.setEmail(updatedContact.getEmail());
+        existingContact.setNome(updatedContactDTO.nome());
+        existingContact.setTelefone(updatedContactDTO.telefone());
+        existingContact.setEmail(updatedContactDTO.email());
 
-        return contactRepository.save(existingContact);
+        Contact updatedContact = contactRepository.save(existingContact);
+        return contactMapper.toDTO(updatedContact);
     }
 
     @PatchMapping("/{id}")
-    public Contact updateField(@PathVariable Long id, @RequestBody @Valid Contact updatedField){
+    public ContactDTO updateField(@PathVariable Long id, @RequestBody @Valid ContactDTO contactDTO){
         Contact existingContact = contactRepository.findById(id).
                 orElseThrow(()-> new ResourceNotFoundException("Contato com ID " + id + " não encontrado"));
-        if(updatedField.getNome() != null) {
-            existingContact.setNome(updatedField.getNome());
-        }if(updatedField.getTelefone() != null){
-            existingContact.setTelefone(updatedField.getTelefone());
-        }if(updatedField.getEmail() != null)
-            existingContact.setEmail(updatedField.getEmail());
-
-        return contactRepository.save(existingContact);
+        if(contactDTO.nome() != null) {
+            existingContact.setNome(contactDTO.nome());
+        }if(contactDTO.telefone() != null){
+            existingContact.setTelefone(contactDTO.telefone());
+        }if(contactDTO.email() != null)
+            existingContact.setEmail(contactDTO.email());
+        Contact updatedContact = contactRepository.save(existingContact);
+        return contactMapper.toDTO(updatedContact);
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteContact(@PathVariable Long id){
        contactRepository.deleteById(id);
     }

@@ -24,4 +24,6 @@ public interface ContactMapper {
     AddressDTO toAddressDTO(Address address);
 
     Address toAddressEntity(AddressDTO addressDTO);
+
+    List<AddressDTO> toAddressDTOList(List<Address> addresses);
 }
