@@ -1,8 +1,8 @@
 package br.ifsp.contacts_api.dto;
 
 import br.ifsp.contacts_api.model.Contact;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.util.List;
@@ -22,6 +22,7 @@ public record ContactDTO(
         @Pattern(regexp = "\\d+", message = "O telefone deve conter apenas números")
         String telefone,
 
+        @Valid
         @NotEmpty(message = "O contato deve ter pelo menos um endereço")
         List<AddressDTO> addresses) {
 

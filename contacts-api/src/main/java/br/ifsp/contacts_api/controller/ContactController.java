@@ -5,6 +5,8 @@ import br.ifsp.contacts_api.exception.ResourceNotFoundException;
 import br.ifsp.contacts_api.model.Contact;
 import br.ifsp.contacts_api.repository.ContactRepository;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +25,9 @@ public class ContactController {
     private ContactMapper contactMapper;
 
     @GetMapping
-    public List<ContactDTO> getAllContacts(){
-        List<Contact> contacts = contactRepository.findAll();
-        return contactMapper.toDTOList(contacts);
+    public Page<ContactDTO> getAllContacts(Pageable pageable){
+        Page<Contact> contactsPage = contactRepository.findAll(pageable);
+        return contactsPage.map(contactMapper::toDTO);
     }
 
     @GetMapping("/{id}")
@@ -41,9 +43,9 @@ public class ContactController {
     // tudo que vier depois do "?" na url, ele entende como parametro automaticamente,
     // no caso o name=valor ele joga no @RequestParam String name
     @GetMapping("/search")
-    public List<ContactDTO> getContactsByName(@RequestParam String name){
-        List<Contact> contacts = contactRepository.findByNomeContaining(name);
-        return contactMapper.toDTOList(contacts);
+    public Page<ContactDTO> getContactsByName(@RequestParam String name, Pageable pageable){
+        Page<Contact> contactsPage = contactRepository.findByNomeContainingIgnoreCase(name, pageable);
+        return contactsPage.map(contactMapper::toDTO);
     }
 
     @PostMapping
@@ -87,7 +89,7 @@ public class ContactController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteContact(@PathVariable Long id){
-       contactRepository.deleteById(id);
+        contactRepository.deleteById(id);
     }
 
 

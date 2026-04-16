@@ -1,6 +1,8 @@
 package br.ifsp.contacts_api.repository;
 
 import br.ifsp.contacts_api.model.Contact;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -16,5 +18,9 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
        juntando tudo o comando que ele faz é
        SELECT * FROM contacts WHERE nome LIKE %valor%
     */
-     public List<Contact> findByNomeContaining(String nome);
+    public List<Contact> findByNomeContaining(String nome);
+
+    public Page<Contact> findAll(Pageable pageable);
+
+    Page<Contact> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
 }

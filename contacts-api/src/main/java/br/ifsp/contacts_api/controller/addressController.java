@@ -9,6 +9,8 @@ import br.ifsp.contacts_api.repository.addressRepository;
 import br.ifsp.contacts_api.repository.ContactRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,10 +30,12 @@ public class addressController {
     private ContactMapper contactMapper;
 
     @GetMapping("/contacts/{contactId}")
-    public List<AddressDTO> getAddressesByContact(@PathVariable Long contactId){
-        Contact contact = contactRepository.findById(contactId)
-                .orElseThrow(()-> new ResourceNotFoundException("Contato com ID " + contactId + " não encontrado"));;
-        return contactMapper.toAddressDTOList(contact.getAddresses());
+    public Page<AddressDTO> getAddressesByContact(@PathVariable Long contactId, Pageable pageable){
+        if (!contactRepository.existsById(contactId)) {
+            throw new ResourceNotFoundException("Contato com ID " + contactId + " não encontrado");
+        }
+        return addressRepository.findByContactId(contactId, pageable)
+                .map(contactMapper::toAddressDTO);
     }
 
     @PostMapping("/contacts/{contactId}")
