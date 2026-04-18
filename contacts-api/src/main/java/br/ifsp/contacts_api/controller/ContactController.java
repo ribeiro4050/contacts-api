@@ -4,6 +4,9 @@ import br.ifsp.contacts_api.dto.ContactDTO;
 import br.ifsp.contacts_api.exception.ResourceNotFoundException;
 import br.ifsp.contacts_api.model.Contact;
 import br.ifsp.contacts_api.repository.ContactRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +33,7 @@ public class ContactController {
         return contactsPage.map(contactMapper::toDTO);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/addresses")
     public ContactDTO getContactById(@PathVariable Long id){
 
         Contact contact = contactRepository.findById(id)
@@ -47,6 +50,12 @@ public class ContactController {
         Page<Contact> contactsPage = contactRepository.findByNomeContainingIgnoreCase(name, pageable);
         return contactsPage.map(contactMapper::toDTO);
     }
+
+    @Operation(summary = "Cria um novo contato", description = "Cadastra um contato e seus endereços no banco MySQL via cascade")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Contato criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "erro de validação nos dados enviados")
+    })
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
