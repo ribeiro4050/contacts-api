@@ -1,9 +1,6 @@
 package br.ifsp.contacts_api.dto;
 
 import br.ifsp.contacts_api.model.Address;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
